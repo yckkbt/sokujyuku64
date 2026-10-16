@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 64 - How Animals Play</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Lato:wght@400;700;900&display=swap');
+  :root{--blue:#1a4fa0;--orange:#e8630a;--green:#1a7a3c;--light-blue:#e8f0fb;--border:#e0e4ea;--bg:#f0f2f5}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#222}
+  .header{background:var(--blue);color:white;padding:20px 24px 16px}
+  .header-top{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+  .unit-badge{background:var(--orange);color:white;font-family:'Lato',sans-serif;font-weight:900;font-size:13px;padding:3px 10px;border-radius:20px}
+  .header h1{font-size:17px;font-weight:900}
+  .header-sub{font-size:13px;opacity:.75;margin-top:2px}
+  .header-bar{height:4px;background:var(--orange)}
+  .steps-nav{background:white;border-bottom:1px solid var(--border);display:flex;overflow-x:auto}
+  .step-btn{flex:1;min-width:80px;padding:12px 8px;border:none;background:none;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;color:#888;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+  .step-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+  .step-btn:hover{background:var(--light-blue)}
+  .step-content{display:none;max-width:720px;margin:0 auto;padding:24px 20px 60px}
+  .step-content.active{display:block}
+  .listen-card{background:white;border-radius:12px;border:1px solid var(--border);padding:28px 24px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .listen-icon{font-size:48px;margin-bottom:12px}
+  .listen-title{font-size:18px;font-weight:900;margin-bottom:6px}
+  .listen-sub{font-size:13px;color:#888;margin-bottom:20px}
+  audio{width:100%;margin-top:8px}
+  .para-card{background:white;border-radius:12px;border:1px solid var(--border);padding:24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .para-num{display:inline-block;background:var(--blue);color:white;font-family:'Lato',sans-serif;font-weight:900;font-size:12px;padding:2px 10px;border-radius:20px;margin-bottom:12px}
+  .para-en{font-family:'Lato',sans-serif;font-size:15px;line-height:1.9;margin-bottom:16px;color:#111}
+  .para-en em{font-style:normal;background:#fff3cd;padding:0 2px;border-radius:3px}
+  .para-ja{font-size:13px;line-height:1.9;color:#555;border-top:1px solid var(--border);padding-top:14px}
+  .box{border-radius:8px;padding:14px 16px;margin-top:14px;font-size:13px;line-height:1.8}
+  .vocab-box{background:#f0f7ff;border-left:4px solid var(--blue)}
+  .idiom-box{background:#fff5ee;border-left:4px solid var(--orange)}
+  .grammar-box{background:#f0fff4;border-left:4px solid var(--green)}
+  .box-title{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;opacity:.7}
+  .check-q{background:#fafafa;border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-top:14px;font-size:13px}
+  .check-q-label{font-weight:700;color:var(--blue);font-size:12px;margin-bottom:6px}
+  .quiz-card{background:white;border-radius:12px;border:1px solid var(--border);padding:22px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .quiz-q{font-size:15px;font-weight:700;margin-bottom:16px;line-height:1.6}
+  .quiz-opts{display:flex;flex-direction:column;gap:10px}
+  .quiz-opt{padding:12px 16px;border:2px solid var(--border);border-radius:8px;cursor:pointer;font-size:14px;transition:all .15s;text-align:left;background:white;font-family:'Noto Sans JP',sans-serif}
+  .quiz-opt:hover{border-color:var(--blue);background:var(--light-blue)}
+  .quiz-opt.correct{border-color:var(--green);background:#f0fff4;color:var(--green)}
+  .quiz-opt.wrong{border-color:#e53e3e;background:#fff5f5;color:#c53030}
+  .quiz-fb{margin-top:12px;font-size:13px;padding:10px 14px;border-radius:8px;display:none;line-height:1.7}
+  .quiz-fb.show{display:block}
+  .quiz-fb.ok{background:#f0fff4;color:var(--green)}
+  .quiz-fb.ng{background:#fff5f5;color:#c53030}
+  .quiz-score{text-align:center;padding:24px;background:white;border-radius:12px;border:1px solid var(--border);margin-top:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .score-num{font-size:48px;font-weight:900;color:var(--blue);font-family:'Lato',sans-serif}
+  .retry-btn{margin-top:16px;padding:12px 32px;background:var(--blue);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif}
+  .fc-wrap{max-width:400px;margin:0 auto}
+  .fc-card{background:white;border-radius:16px;border:1px solid var(--border);min-height:200px;display:flex;align-items:center;justify-content:center;text-align:center;padding:32px 24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .1s;user-select:none;margin-bottom:16px}
+  .fc-card:active{transform:scale(.97)}
+  .fc-front{font-family:'Lato',sans-serif;font-size:22px;font-weight:700;color:var(--blue)}
+  .fc-back{display:none}
+  .fc-back-en{font-family:'Lato',sans-serif;font-size:18px;font-weight:700;color:var(--blue);margin-bottom:8px}
+  .fc-back-ja{font-size:15px;color:#555;margin-bottom:12px}
+  .fc-back-ex{font-size:13px;color:#777;font-style:italic;line-height:1.7}
+  .fc-hint{font-size:12px;color:#aaa;margin-bottom:16px;text-align:center}
+  .fc-btns{display:flex;gap:12px;justify-content:center;margin-bottom:24px}
+  .fc-btn{padding:10px 24px;border:2px solid var(--border);border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;background:white;transition:all .15s}
+  .fc-btn.know{border-color:var(--green);color:var(--green)}
+  .fc-btn.know:hover{background:var(--green);color:white}
+  .fc-btn.review{border-color:var(--orange);color:var(--orange)}
+  .fc-btn.review:hover{background:var(--orange);color:white}
+  .fc-progress{font-size:13px;color:#888;text-align:center;margin-bottom:16px}
+  .fc-done{text-align:center;padding:32px 24px;background:white;border-radius:12px;border:1px solid var(--border)}
+  .step-header{font-size:16px;font-weight:900;color:var(--blue);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--light-blue)}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <span class="unit-badge">Unit 64</span>
+    <h1>How Animals Play</h1>
+  </div>
+  <div class="header-sub">動物はどのように遊ぶか</div>
+</div>
+<div class="header-bar"></div>
+
+<nav class="steps-nav">
+  <button class="step-btn active" onclick="showStep(1,this)">🎧 Step 1<br>Listen</button>
+  <button class="step-btn" onclick="showStep(2,this)">📖 Step 2<br>Read</button>
+  <button class="step-btn" onclick="showStep(3,this)">✏️ Step 3<br>Quiz</button>
+  <button class="step-btn" onclick="showStep(4,this)">🃏 Step 4<br>Flashcards</button>
+</nav>
+
+<!-- STEP 1 -->
+<div class="step-content active" id="step1">
+  <div class="listen-card">
+    <div class="listen-icon">🎧</div>
+    <div class="listen-title">まず音声を聴こう</div>
+    <div class="listen-sub">英文を見る前に、音声だけで内容を掴んでみよう</div>
+    <audio controls src="sokujukure190_eibun64.mp3"></audio>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-content" id="step2">
+  <div class="step-header">📖 英文を読んで理解しよう</div>
+
+  <!-- Para 1 -->
+  <div class="para-card">
+    <span class="para-num">¶ 1</span>
+    <div class="para-en">Robert Fulghum published a book titled <em>All I Really Need to Know I Learned in Kindergarten</em>. In it, Fulghum writes that the lessons for life that are worth knowing are learned early on. In short, these lessons are simple things like "play fair" and "don't take things that aren't yours." The book became a million-seller and was translated into one language after another, including Japanese.</div>
+    <div class="para-ja">ロバート・フルガムは『人生に必要な知恵はすべて幼稚園の砂場で学んだ』という本を出版した。その中でフルガムは、知る価値のある人生の教訓は早い段階で学ばれると書いている。つまり、これらの教訓は「公平に遊ぶ」「自分のものでないものは取らない」といったシンプルなことだ。この本はミリオンセラーとなり、日本語を含む次々と多くの言語に翻訳された。</div>
+    <div class="vocab-box box">
+      <div class="box-title">📚 Vocabulary</div>
+      <strong>publish</strong>「出版する」／ <strong>worth -ing</strong>「〜する価値がある」／ <strong>early on</strong>「早い段階で」／ <strong>in short</strong>「つまり・要するに」／ <strong>one after another</strong>「次々と」／ <strong>translate</strong>「翻訳する」
+    </div>
+    <div class="idiom-box box">
+      <div class="box-title">💡 Idiom</div>
+      <strong>one after another</strong>：「次々と」（複数のものが続く様子）<br>
+      例：<em>My whole life was one disaster after another.</em>（私の人生は次々と災難の連続だった。）<br><br>
+      <strong>in short</strong>：「つまり・要するに」（まとめや結論を導く表現）<br>
+      例：<em>In short, we need to act now.</em>（つまり、今すぐ行動する必要がある。）
+    </div>
+    <div class="check-q">
+      <div class="check-q-label">❓ Check</div>
+      What is the main message of Fulghum's book?<br>
+      <strong>→ The most important lessons for life are learned early, and they are simple things like "play fair."</strong>
+    </div>
+  </div>
+
+  <!-- Para 2 -->
+  <div class="para-card">
+    <span class="para-num">¶ 2</span>
+    <div class="para-en">Animals are different from humans in many ways. They have needs that are unique to their circumstances, such as finding food and avoiding predators. However, animals are often engaged in playing with one another, especially when they are young. And while they probably have a good time playing, they may be doing more than just enjoying themselves.</div>
+    <div class="para-ja">動物は多くの点で人間と異なる。食物を見つけたり捕食者を避けたりするなど、動物たちの状況に固有のニーズがある。しかし、動物たちは特に幼い頃は、互いに遊ぶことによく夢中になっている。そして彼らは遊びを楽しんでいるだろうが、単に楽しんでいる以上のことをしているのかもしれない。</div>
+    <div class="vocab-box box">
+      <div class="box-title">📚 Vocabulary</div>
+      <strong>be different from</strong>「〜と異なる」／ <strong>unique to</strong>「〜に固有の」／ <strong>predator</strong>「捕食者」／ <strong>be engaged in</strong>「〜に従事している・夢中になっている」／ <strong>one another</strong>「お互いに」／ <strong>enjoy oneself</strong>「楽しむ」
+    </div>
+    <div class="grammar-box box">
+      <div class="box-title">📝 Grammar</div>
+      <strong>doing more than just -ing</strong>：「単に〜している以上のことをしている」<br>
+      例：<em>She is doing more than just surviving — she is thriving.</em>（彼女は単に生き延びているだけでなく、繁栄している。）<br><br>
+      <strong>while</strong>の譲歩用法：「〜だが・〜である一方で」<br>
+      例：<em>While they probably enjoy it, play serves a deeper purpose.</em>
+    </div>
+    <div class="check-q">
+      <div class="check-q-label">❓ Check</div>
+      What needs are unique to animals (not shared with humans)?<br>
+      <strong>→ Finding food and avoiding predators.</strong>
+    </div>
+  </div>
+
+  <!-- Para 3 -->
+  <div class="para-card">
+    <span class="para-num">¶ 3</span>
+    <div class="para-en">You may have seen kittens play by fighting or wrestling with others. Some researchers say this play prepares them for predators and other surprises later in life. Kangaroos and wolves play to develop social relationships in order to survive as adults. Some birds also chase after branches and pinecones to develop their hunting skills.</div>
+    <div class="para-ja">子猫が他の猫と戦ったりレスリングをしたりして遊ぶのを見たことがあるかもしれない。一部の研究者は、この遊びが後の人生での捕食者や予期しない出来事に備えさせると言う。カンガルーやオオカミは、大人として生き残るために社会的な関係を築くために遊ぶ。一部の鳥も、狩猟技術を身につけるために枝や松ぼっくりを追いかける。</div>
+    <div class="vocab-box box">
+      <div class="box-title">📚 Vocabulary</div>
+      <strong>wrestle</strong>「レスリングをする・格闘する」／ <strong>prepare A for B</strong>「AをBに備えさせる」／ <strong>social relationships</strong>「社会的な関係」／ <strong>in order to do</strong>「〜するために」／ <strong>chase after</strong>「〜を追いかける」／ <strong>pinecone</strong>「松ぼっくり」／ <strong>hunting skills</strong>「狩猟技術」
+    </div>
+    <div class="check-q">
+      <div class="check-q-label">❓ Check</div>
+      Why do kangaroos and wolves play with each other?<br>
+      <strong>→ To develop social relationships in order to survive as adults.</strong>
+    </div>
+  </div>
+
+  <!-- Para 4 -->
+  <div class="para-card">
+    <span class="para-num">¶ 4</span>
+    <div class="para-en">Play can do both humans and animals good in many ways. It teaches social relationships and boundaries. Taking part in play activities can help young creatures develop skills that are essential to their wellbeing and survival later on in life. Put into words, Fulghum's simple lessons for life may not be different from what animals learn through play.</div>
+    <div class="para-ja">遊びは人間にも動物にも多くの点でよい影響を与える。遊びは社会的な関係と境界を教えてくれる。遊びの活動に参加することは、若い生き物が後の人生での幸福と生存に不可欠なスキルを身につけるのを助けることができる。言葉にすると、フルガムの人生に関するシンプルな教訓は、動物が遊びを通じて学ぶことと変わらないかもしれない。</div>
+    <div class="vocab-box box">
+      <div class="box-title">📚 Vocabulary</div>
+      <strong>do A good</strong>「Aのためになる・Aによい影響を与える」／ <strong>boundary</strong>「境界・限度」／ <strong>take part in</strong>「〜に参加する」／ <strong>essential to</strong>「〜に不可欠な」／ <strong>wellbeing</strong>「幸福・健康」／ <strong>put into words</strong>「言葉にする」／ <strong>later on</strong>「後になって」
+    </div>
+    <div class="idiom-box box">
+      <div class="box-title">💡 Idiom</div>
+      <strong>do ~ good</strong>：「〜のためになる」「〜に益をもたらす」<br>
+      例：<em>Take more exercise. It'll do you good.</em>（もっと運動しなさい。体にいいよ。）<br><br>
+      <strong>take part in ~</strong>：「〜に参加する」（＝ participate in ~）<br>
+      例：<em>When did he take part in the committee?</em>（彼はいつ委員会に参加したのか？）<br><br>
+      <strong>put A into B</strong>：「AをBに置き換える・表現する」<br>
+      例：<em>I can't put my feelings into words.</em>（自分の気持ちを言葉にできない。）
+    </div>
+    <div class="check-q">
+      <div class="check-q-label">❓ Check</div>
+      What is the main point of the last paragraph?<br>
+      <strong>→ Play helps develop essential life skills, and the lessons animals learn through play may be similar to Fulghum's simple life lessons.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-content" id="step3">
+  <div class="step-header">✏️ 理解度チェッククイズ</div>
+
+  <div class="quiz-card" id="qc1">
+    <div class="quiz-q">1. What is the title of Robert Fulghum's book mentioned in the passage?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,'wrong',1)">① All I Really Need to Know I Learned in High School</button>
+      <button class="quiz-opt" onclick="answer(this,'correct',1)">② All I Really Need to Know I Learned in Kindergarten</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',1)">③ All I Really Need to Know I Learned from Animals</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',1)">④ All I Really Need to Know I Learned from Play</button>
+    </div>
+    <div class="quiz-fb" id="qf1"></div>
+  </div>
+
+  <div class="quiz-card" id="qc2">
+    <div class="quiz-q">2. According to the passage, why do kittens play by fighting or wrestling?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,'wrong',2)">① To entertain their owners</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',2)">② To show dominance over other cats</button>
+      <button class="quiz-opt" onclick="answer(this,'correct',2)">③ To prepare for predators and other surprises later in life</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',2)">④ To develop their social skills with humans</button>
+    </div>
+    <div class="quiz-fb" id="qf2"></div>
+  </div>
+
+  <div class="quiz-card" id="qc3">
+    <div class="quiz-q">3. Why do some birds chase after branches and pinecones?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,'wrong',3)">① To build their nests</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',3)">② To practice flying long distances</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',3)">③ To establish their territory</button>
+      <button class="quiz-opt" onclick="answer(this,'correct',3)">④ To develop their hunting skills</button>
+    </div>
+    <div class="quiz-fb" id="qf3"></div>
+  </div>
+
+  <div class="quiz-card" id="qc4">
+    <div class="quiz-q">4. The phrase "do ~ good" in paragraph 4 means ____.</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,'wrong',4)">① to make ~ feel happy</button>
+      <button class="quiz-opt" onclick="answer(this,'correct',4)">② to be beneficial to ~</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',4)">③ to teach ~ to be good</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',4)">④ to make ~ work harder</button>
+    </div>
+    <div class="quiz-fb" id="qf4"></div>
+  </div>
+
+  <div class="quiz-card" id="qc5">
+    <div class="quiz-q">5. What conclusion does the author reach in the last paragraph?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,'wrong',5)">① Humans are much better at playing than animals.</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',5)">② Animals do not need to play to survive.</button>
+      <button class="quiz-opt" onclick="answer(this,'correct',5)">③ The life lessons animals learn through play may not be different from Fulghum's simple human lessons.</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong',5)">④ Fulghum's book was inspired by watching animals play.</button>
+    </div>
+    <div class="quiz-fb" id="qf5"></div>
+  </div>
+
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div>あなたのスコア</div>
+    <div class="score-num"><span id="score-val">0</span> / 5</div>
+    <div style="margin-top:8px;color:#555;font-size:14px" id="score-msg"></div>
+    <button class="retry-btn" onclick="retryQuiz()">もう一度挑戦</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-content" id="step4">
+  <div class="step-header">🃏 イディオム・フラッシュカード</div>
+  <div class="fc-wrap">
+    <div class="fc-progress" id="fc-prog"></div>
+    <div class="fc-card" id="fc-card" onclick="flipCard()">
+      <div class="fc-front" id="fc-front"></div>
+      <div class="fc-back" id="fc-back" style="display:none">
+        <div class="fc-back-en" id="fc-en"></div>
+        <div class="fc-back-ja" id="fc-ja"></div>
+        <div class="fc-back-ex" id="fc-ex"></div>
+      </div>
+    </div>
+    <div class="fc-hint" id="fc-hint">カードをタップして意味を確認</div>
+    <div class="fc-btns" id="fc-btns" style="display:none">
+      <button class="fc-btn know" onclick="markCard(true)">✓ わかった</button>
+      <button class="fc-btn review" onclick="markCard(false)">↩ もう一度</button>
+    </div>
+    <div class="fc-done" id="fc-done" style="display:none">
+      <div style="font-size:32px;margin-bottom:12px">🎉</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:8px">お疲れ様でした！</div>
+      <div style="font-size:13px;color:#555;margin-bottom:16px">全カード完了</div>
+      <button class="retry-btn" onclick="shuffleCards()">もう一度</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showStep(n, btn) {
+  document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.step-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  btn.classList.add('active');
+}
+
+let scores = {};
+let answered = {};
+function answer(btn, type, qn) {
+  if (answered[qn]) return;
+  answered[qn] = true;
+  const fb = document.getElementById('qf' + qn);
+  btn.classList.add(type === 'correct' ? 'correct' : 'wrong');
+  if (type === 'correct') {
+    scores[qn] = 1;
+    fb.textContent = '✓ 正解！';
+    fb.className = 'quiz-fb show ok';
+  } else {
+    scores[qn] = 0;
+    fb.className = 'quiz-fb show ng';
+    const correctTexts = {
+      1: '② All I Really Need to Know I Learned in Kindergarten',
+      2: '③ To prepare for predators and other surprises later in life',
+      3: '④ To develop their hunting skills',
+      4: '② to be beneficial to ~',
+      5: '③ The life lessons animals learn through play may not be different from Fulghum\'s simple human lessons.'
+    };
+    fb.textContent = '✗ 不正解。正解は「' + correctTexts[qn] + '」';
+  }
+  document.querySelectorAll('#qc' + qn + ' .quiz-opt').forEach(o => o.disabled = true);
+  if (Object.keys(answered).length === 5) showScore();
+}
+function showScore() {
+  const total = Object.values(scores).reduce((a, b) => a + b, 0);
+  document.getElementById('score-val').textContent = total;
+  const msgs = ['もう一度読んでみよう💪', '惜しい！復習しよう📖', 'よく頑張りました！🌟', '素晴らしい！⭐', '満点！完璧です！🏆'];
+  document.getElementById('score-msg').textContent = msgs[total] || msgs[4];
+  document.getElementById('quiz-score').style.display = 'block';
+}
+function retryQuiz() {
+  scores = {}; answered = {};
+  document.getElementById('quiz-score').style.display = 'none';
+  document.querySelectorAll('.quiz-opt').forEach(o => {
+    o.classList.remove('correct', 'wrong');
+    o.disabled = false;
+  });
+  document.querySelectorAll('.quiz-fb').forEach(f => f.className = 'quiz-fb');
+}
+
+const cards = [
+  { front: 'early on', en: 'early on', ja: '早い段階で・初期に', ex: 'The young player struggled early on in his career.\n（その若い選手はキャリアの初期に苦労した。）' },
+  { front: 'in short', en: 'in short', ja: 'つまり・要するに', ex: 'In short, we need more time.\n（つまり、もっと時間が必要だ。）' },
+  { front: 'one after another', en: 'one after another', ja: '次々と', ex: 'The book was translated into one language after another.\n（その本は次々と様々な言語に翻訳された。）' },
+  { front: 'be unique to ~', en: 'be unique to ~', ja: '〜に固有の・〜だけに見られる', ex: 'The kiwi is unique to New Zealand.\n（キーウィはニュージーランドにしかいない。）' },
+  { front: 'be engaged in ~', en: 'be engaged in ~', ja: '〜に従事している・〜に夢中になっている', ex: 'They are engaged in saving street children.\n（彼らはストリートチルドレンの救済活動に従事している。）' },
+  { front: 'one another', en: 'one another', ja: 'お互いに（3者以上）', ex: 'We have known one another for some years.\n（私たちは何年もお互いを知っている。）' },
+  { front: 'enjoy oneself', en: 'enjoy oneself', ja: '楽しむ', ex: 'We enjoyed ourselves at the party.\n（パーティーで楽しい時を過ごした。）' },
+  { front: 'in order to do', en: 'in order to do', ja: '〜するために（目的）', ex: 'Wolves play in order to survive as adults.\n（オオカミは大人として生き残るために遊ぶ。）' },
+  { front: 'take part in ~', en: 'take part in ~', ja: '〜に参加する', ex: 'All students should take part in sports activities.\n（すべての生徒はスポーツ活動に参加すべきだ。）' },
+  { front: 'do ~ good', en: 'do ~ good', ja: '〜のためになる・〜に益をもたらす', ex: 'Take more exercise. It\'ll do you good.\n（もっと運動しなさい。体にいいよ。）' },
+  { front: 'later on', en: 'later on', ja: '後になって・後で', ex: 'Call her now, or you\'ll regret it later on.\n（今すぐ彼女に電話しなさい。そうしないと後悔するよ。）' },
+  { front: 'put A into B', en: 'put A into B', ja: 'AをBに表現する・変換する', ex: 'I can\'t put my feelings into words.\n（自分の気持ちを言葉にできない。）' },
+];
+
+let deck = [], current = 0, flipped = false;
+function shuffleCards() {
+  deck = [...cards].sort(() => Math.random() - 0.5);
+  current = 0; flipped = false;
+  document.getElementById('fc-done').style.display = 'none';
+  document.getElementById('fc-card').style.display = 'flex';
+  document.getElementById('fc-hint').style.display = 'block';
+  renderCard();
+}
+function renderCard() {
+  if (current >= deck.length) {
+    document.getElementById('fc-card').style.display = 'none';
+    document.getElementById('fc-btns').style.display = 'none';
+    document.getElementById('fc-hint').style.display = 'none';
+    document.getElementById('fc-done').style.display = 'block';
+    document.getElementById('fc-prog').textContent = '';
+    return;
+  }
+  const c = deck[current];
+  document.getElementById('fc-front').textContent = c.front;
+  document.getElementById('fc-front').style.display = 'block';
+  document.getElementById('fc-back').style.display = 'none';
+  document.getElementById('fc-en').textContent = c.en;
+  document.getElementById('fc-ja').textContent = c.ja;
+  document.getElementById('fc-ex').textContent = c.ex;
+  document.getElementById('fc-btns').style.display = 'none';
+  document.getElementById('fc-hint').style.display = 'block';
+  document.getElementById('fc-prog').textContent = (current + 1) + ' / ' + deck.length;
+  flipped = false;
+}
+function flipCard() {
+  if (flipped) return;
+  flipped = true;
+  document.getElementById('fc-front').style.display = 'none';
+  document.getElementById('fc-back').style.display = 'block';
+  document.getElementById('fc-btns').style.display = 'flex';
+  document.getElementById('fc-hint').style.display = 'none';
+}
+function markCard(known) {
+  if (!known) deck.push(deck[current]);
+  current++;
+  renderCard();
+}
+shuffleCards();
+</script>
+</body>
+</html>
